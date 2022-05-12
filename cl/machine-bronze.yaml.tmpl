@@ -1,0 +1,24 @@
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys: ${ssh_keys}
+systemd:
+  units:
+    - name: minecraft.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=A Minecraft server (${name})
+        After=docker.service
+        Requires=docker.service
+
+        [Service]
+        TimeoutStartSec=0
+        ExecStartPre=/usr/bin/docker rm --force mc
+        ExecStart=/usr/bin/docker run -i -p 25565:25565 --pull always -e EULA=TRUE -e VERSION=1.14.4 -e MEMORY=3G -v /home/core/minecraft-data:/data --name mc itzg/minecraft-server
+        ExecStop=/usr/bin/docker stop mc
+        Restart=always
+        RestartSec=10
+
+        [Install]
+        WantedBy=multi-user.target
