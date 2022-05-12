@@ -13,6 +13,11 @@ while IFS= read -r line; do
     # get hostname through ssh
     hostname=$(ssh $line hostname)
 
+    # don't do anything if there's no folder named after the hostname
+    if [ ! -d "worlds/$hostname" ]; then
+        continue
+    fi
+
     # stop the minecraft server
     ssh $line "sudo systemctl stop minecraft && sudo systemctl disable minecraft"
 
